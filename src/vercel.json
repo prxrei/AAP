@@ -15,13 +15,7 @@
       "dest": "app.py"
     }
   ],
-  "build": {
-    "env": {
-      "PYTHON_VERSION": "3.10"
-    },
-    "commands": [
-      "pip install --upgrade pip",
-      "pip install -r requirements.txt"
-    ]
+  "env": {
+    "PYTHON_VERSION": "3.10"
   }
 }
