@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Nanyang Polytechnic</title>
+</head>
+
+<style>
+    /* General Styling */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        color: #fff;
+    }
+
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo img {
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+    }
+
+    nav ul li {
+        display: inline;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: #000;
+        font-weight: bold;
+    }
+
+    .sign-in {
+        background: #4d68ff;
+        color: white;
+        padding: 8px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    /* Hero Section */
+    .hero h1 {
+        font-size: 72px;
+        font-weight: bold;
+        margin-bottom: 100px;
+    }
+
+    .hero span {
+        color: transparent;
+        /* Ensures the text itself is fully transparent */
+        text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white, 0 0 4px white;
+        /* Glowing effect */
+        font-weight: bold;
+        /* Optional, to make the glow more prominent */
+    }
+
+    /* Tools Section */
+    .tools {
+        background: #5966a7;
+        padding: 30px 10px 50px 10px;
+        text-align: center;
+    }
+
+    .tools h2 {
+        margin-bottom: 30px;
+        font-size: 200%;
+    }
+
+    .tool-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .tool-card {
+        background: white;
+        color: black;
+        padding: 20px 10px 50px 10px;
+        border-radius: 10px;
+        width: 600px;
+        text-align: center;
+
+        /* Center content vertically */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+
+    .tool-card h3 {
+        font-size: 18px;
+    }
+
+    .btn {
+        display: inline-block;
+        background: #f9a825;
+        padding: 10px 20px;
+        margin-top: 10px;
+        text-decoration: none;
+        color: black;
+        border-radius: 5px;
+    }
+
+    /* Footer */
+    footer {
+        background-color: #16181d;
+        /* Dark background */
+        color: white;
+        padding: 40px 80px;
+    }
+
+    .footer-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .footer-column {
+        width: 18%;
+        min-width: 160px;
+    }
+
+    .footer-column h3 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .footer-column ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer-column ul li {
+        margin-bottom: 8px;
+    }
+
+    .footer-column ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    .footer-column ul li a:hover {
+        color: #999;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 15px;
+    }
+
+    .social-icons a {
+        color: white;
+        font-size: 20px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .social-icons a:hover {
+        color: #999;
+    }
+
+    .hero {
+        background: url('/static/images/hero.jpg') no-repeat center center;
+        background-size: cover;
+        /* Ensures the image covers the entire section */
+        background-attachment: fixed;
+        height: 100vh;
+        /* Makes the section take the full height of the viewport */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        /* Makes it sticky */
+        top: 0;
+        left: 0;
+        width: 95vw;
+        padding: 15px 40px;
+        transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        z-index: 1000;
+    }
+
+    header.transparent {
+        background: transparent;
+        box-shadow: none;
+        color: white;
+    }
+
+    header.transparent a {
+        color: white;
+        /* Ensures links are white */
+    }
+
+    header.opaque {
+        background: rgb(179, 179, 179);
+        /* Dark background when scrolling */
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        /* Add shadow for better visibility */
+    }
+
+</style>
+
+<body>
+{% include 'Nav.html' %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Create a future <br> <span>of Possibilities</span></h1>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools">
+        <h2>Tools Available</h2>
+        <div class="tool-container">
+            <div class="tool-card">
+                <h3>Handwritten Math Analyser</h3>
+                <p>Need help with understanding a math problem? No worries, we got you covered! Just send the math
+                    problem in an image form and our model will solve it for you!</p>
+                <a href="http://127.0.0.1:5000/math-analyser" class="btn">Use Now →</a>
+            </div>
+            <div class="tool-card">
+                <h3>Facial Recognition</h3>
+                <p>----</p>
+                <a href="http://127.0.0.1:5000/Attendance-taking" class="btn">Use Now →</a>
+            </div>
+            <div class="tool-card">
+                <h3>Science Classifier</h3>
+                <p>----</p>
+                <a href="http://127.0.0.1:5000/science-classifier" class="btn">Use Now →</a>
+            </div>
+            <div class="tool-card">
+                <h3>Performance Analysis</h3>
+                <p>----</p>
+                <a href="http://127.0.0.1:5000" class="btn">Use Now →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Connect with NYP</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-x-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>About Us</h3>
+                <ul>
+                    <li><a href="#">About NYP</a></li>
+                    <li><a href="#">Our People</a></li>
+                    <li><a href="#">Media Centre</a></li>
+                    <li><a href="#">Careers ↗</a></li>
+                    <li><a href="#">Give</a></li>
+                    <li><a href="#">Visit NYP</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">FAQ ↗</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Related Links</h3>
+                <ul>
+                    <li><a href="#">Sustainability@NYP</a></li>
+                    <li><a href="#">Student Portal ↗</a></li>
+                    <li><a href="#">Library Portal ↗</a></li>
+                    <li><a href="#">Adjunct Staff Portal ↗</a></li>
+                    <li><a href="#">NYP International ↗</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>View as</h3>
+                <ul>
+                    <li><a href="#">Student</a></li>
+                    <li><a href="#">Adult Learner</a></li>
+                    <li><a href="#">Alumni</a></li>
+                    <li><a href="#">Industry Partner</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+<script>
+    window.addEventListener("scroll", function () {
+        let header = document.querySelector("header");
+        if (window.scrollY > 50) {
+            header.classList.add("opaque");
+            header.classList.remove("transparent");
+        } else {
+            header.classList.add("transparent");
+            header.classList.remove("opaque");
+        }
+    });
+</script>
+
+</html>

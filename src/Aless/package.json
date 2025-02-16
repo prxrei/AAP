@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@tensorflow-models/blazeface": "^0.1.0",
+    "@tensorflow/tfjs": "^4.22.0",
+    "react-toastify": "^11.0.3",
+    "styled-components": "^6.1.15"
+  }
+}

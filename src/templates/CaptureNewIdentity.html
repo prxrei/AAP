@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add new identity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #4b4b4b;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: white;
+            border-radius: 5px;
+        }
+
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .preview {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .preview img {
+            width: auto;
+            height: 140px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: filter 0.3s ease-in-out;
+        }
+
+        .preview .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.7); /* Red tint */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            border-radius: 5px;
+        }
+
+        .preview:hover .overlay {
+            opacity: 1;
+        }
+
+        video {
+            width: 600px;
+            /* Full width of container */
+            height: auto;
+            /* Maintain aspect ratio */
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            object-fit: cover;
+            /* Ensures the video fits within the box */
+            aspect-ratio: 23 / 28;
+            /* Enforces a 23:28 aspect ratio */
+        }
+
+        .container {
+            max-width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: cornflowerblue;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: rgb(86, 129, 207);
+        }
+
+        .box{
+            max-width: 600px;
+            margin: 10px auto;
+            background: white;
+            padding: 10px;
+        }
+
+
+        .toast {
+            position: fixed;
+            top: -50px; /* Start above the screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Toast animation */
+        @keyframes toastAnimation {
+            0% {
+                top: -50px; /* Start above the screen */
+                opacity: 0;
+                visibility: visible;
+            }
+            20% {
+                top: 20px; /* Drop down to 20px from the top */
+                opacity: 1;
+                visibility: visible;
+            }
+
+            80% {
+                top: 20px; /* Rise back up and hide */
+                opacity: 1;
+                visibility: visible;
+            }
+
+            100% {
+                top: -50px; /* Rise back up and hide */
+                opacity: 0;
+                visibility: visible;
+            }
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            animation: toastAnimation 3s forwards; /* Apply animation only when 'show' class is added */
+        }
+
+        .group {
+        position: relative;
+        margin-bottom: 20px;
+        }
+
+        .input {
+        font-size: 16px;
+        padding: 10px 10px 10px 5px;
+        display: block;
+        width: 200px;
+        border: none;
+        border-bottom: 1px solid #515151;
+        background: transparent;
+        }
+
+        .input:focus {
+        outline: none;
+        }
+
+        label {
+        color: #999;
+        font-size: 18px;
+        font-weight: normal;
+        position: absolute;
+        pointer-events: none;
+        left: 5px;
+        top: 10px;
+        transition: 0.2s ease all;
+        -moz-transition: 0.2s ease all;
+        -webkit-transition: 0.2s ease all;
+        }
+
+        .input:focus ~ label, .input:valid ~ label {
+        top: -5px;
+        font-size: 14px;
+        color: #5264AE;
+        }
+
+        .bar {
+        position: relative;
+        display: block;
+        width: 200px;
+        }
+
+        .bar:before, .bar:after {
+        content: '';
+        height: 2px;
+        width: 0;
+        bottom: 1px;
+        position: absolute;
+        background: #5264AE;
+        transition: 0.2s ease all;
+        -moz-transition: 0.2s ease all;
+        -webkit-transition: 0.2s ease all;
+        }
+
+        .bar:before {
+        left: 50%;
+        }
+
+        .bar:after {
+        right: 50%;
+        }
+
+        .input:focus ~ .bar:before, .input:focus ~ .bar:after {
+        width: 50%;
+        }
+
+        .highlight {
+        position: absolute;
+        height: 60%;
+        width: 100px;
+        top: 25%;
+        left: 0;
+        pointer-events: none;
+        opacity: 0.5;
+        }
+
+        .input:focus ~ .highlight {
+        animation: inputHighlighter 0.3s ease;
+        }
+
+        @keyframes inputHighlighter {
+        from {
+        background: #5264AE;
+        }
+
+        to {
+        width: 0;
+        background: transparent;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            /* Makes it sticky */
+            top: 0;
+            left: 0;
+            width: 95vw;
+            padding: 15px 40px;
+            background: #b3b3b3;
+            transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        }
+    </style>
+</head>
+
+
+<body>
+    {% include 'Nav.html' %}
+    <div class="container">
+        <div id="toast" class="toast"></div>
+        <div class="group box">
+            <input required="" type="text" class="input" id = "id">
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>ID/Admin No.</label>
+        </div>
+        <video id="video" autoplay></video><br>
+        <div class="preview-container" id="cameraPreview"></div>
+        <div class="button-container box">
+            <button id="capturePhoto">Capture Photo</button>
+            <button id="submitCaptured">Proceed</button>
+        </div>
+    </div>
+
+
+    <script>
+        const toast = document.getElementById("toast");
+        // Camera setup
+        const video = document.getElementById('video');
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+            video.srcObject = stream;
+
+            // Resize the camera video to a 23:28 aspect ratio (highest resolution possible)
+            const videoTrack = stream.getVideoTracks()[0];
+            const capabilities = videoTrack.getCapabilities();
+            const width = capabilities.width.max;
+            const height = Math.floor(width * 28 / 23);  // Maintain aspect ratio 23:28
+
+            const constraints = {
+                video: {
+                    width: { exact: width },
+                    height: { exact: height }
+                }
+            };
+
+            videoTrack.applyConstraints(constraints);
+        });
+
+        // Capture Photo (central crop)
+        document.getElementById('capturePhoto').addEventListener('click', function () {
+            const canvas = document.createElement('canvas');
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+
+            // Calculate the center crop of 23x28 aspect ratio
+            const aspectRatio = 23 / 28;
+            const cropHeight = videoHeight;
+            const cropWidth = cropHeight * aspectRatio;
+
+            // Calculate the x and y positions to crop the center part
+            const x = (videoWidth - cropWidth) / 2;
+            const y = 0; // No vertical offset needed
+
+            canvas.width = cropWidth;
+            canvas.height = cropHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, x, y, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            const previewContainer = document.getElementById('cameraPreview');
+            const preview = document.createElement('div');
+            preview.classList.add('preview');
+            preview.innerHTML = `
+            <img src="${dataUrl}">
+            <div class="overlay"><u>Remove</u></div>`;
+
+            // Remove image when clicked
+            preview.addEventListener('click', () => preview.remove());
+            previewContainer.appendChild(preview);
+        });
+
+
+        // Submit Captured Photos
+        document.getElementById('submitCaptured').addEventListener('click', function () {
+            const id = document.getElementById('id').value;
+            if (!id) {
+                toast.style.backgroundColor = '#f44336'
+                showToast("Error: Please enter an ID for the identity.");
+                return;
+            }
+            const images = document.getElementById('cameraPreview').querySelectorAll('img');
+            if (images.length === 0) {
+                toast.style.backgroundColor = '#f44336'
+                showToast("Error: No images captured to submit.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('id', id);
+            Array.from(images).forEach((img, index) => {
+                const blob = dataURLtoBlob(img.src);
+                formData.append(`image${index}`, blob, `captured${index}.png`);
+            });
+
+            fetch('http://127.0.0.1:5000/AddIdentity', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toast.style.backgroundColor = '#4CAF50'
+                        showToast(`${id} has been added successfully`);
+                    } else {
+                        toast.style.backgroundColor = '#f44336'
+                        showToast("There was an error, please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while submitting captured photos.");
+                });
+        });
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show"); // Start the animation by adding the 'show' class
+            setTimeout(() => {
+                toast.classList.remove("show"); // Remove the class after the animation finishes
+            }, 3000); // Match the animation duration
+        }
+
+        // Convert Data URL to Blob
+        function dataURLtoBlob(dataUrl) {
+            const byteString = atob(dataUrl.split(',')[1]);
+            const arrayBuffer = new ArrayBuffer(byteString.length);
+            const uintArray = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < byteString.length; i++) {
+                uintArray[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([uintArray], { type: 'image/png' });
+        }
+    </script>
+
+</body>
+
+</html>

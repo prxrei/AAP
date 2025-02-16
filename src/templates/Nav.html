@@ -1,0 +1,86 @@
+<html>
+<head>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Logo styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;  /* Space between logo and nav links */
+            align-items: center;  /* Vertically center logo and links */
+            background-color: #003366;
+            color: #fff;
+            padding: 10px 20px;
+            position: sticky;  /* Make navbar sticky */
+            top: 0;  /* Sticky position at the top */
+            z-index: 1000;  /* Keep navbar above other content */
+            width: 100%;  /* Full width */
+            box-sizing: border-box;  /* Ensure padding doesn't affect width */
+        }        
+
+        .navbar div {
+            display: flex;  /* Align image and text horizontally */
+            align-items: center;  /* Vertically align the image and text */
+        }
+
+        .navbar img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .navbar span {
+            line-height: 1.4;
+        }
+
+        .navbar small {
+            font-size: 14px;
+        }
+
+        /* Navbar links styling */
+        .nav-links {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;  /* Display links inline */
+            justify-content: flex-end;  /* Align links to the right */
+        }
+
+        .nav-links li {
+            margin-left: 20px;  /* Space between links */
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px 15px;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            background-color: #0059b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>
+        <img src="{{ url_for('static', filename='images/NYP.png') }}" alt="NYP Logo">
+        <span>NANYANG <br> <small>The Innovative Polytechnic</small></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Life</a></li>
+            <li><a href="#">Study</a></li>
+            <li><a href="#">Visit</a></li>
+            <li><a href="#">Student</a></li>
+        </ul>
+    </div>
+    <!-- Main content of the page goes here -->
+</body>
+</html>

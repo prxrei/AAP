@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Taking</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+
+        #camera-preview {
+            width: auto;
+            height: 90vh;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #result-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            font-size: 18px;
+            display: none;
+        }
+
+        #captured-image {
+            width: auto;
+            height: 90vh;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        /* Toast styles */
+        .toast {
+            position: fixed;
+            top: -50px;
+            /* Start above the screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Toast animation */
+        @keyframes toastAnimation {
+            0% {
+                top: -50px;
+                /* Start above the screen */
+                opacity: 0;
+                visibility: visible;
+            }
+
+            20% {
+                top: 20px;
+                /* Drop down to 20px from the top */
+                opacity: 1;
+                visibility: visible;
+            }
+
+            80% {
+                top: 20px;
+                /* Rise back up and hide */
+                opacity: 1;
+                visibility: visible;
+            }
+
+            100% {
+                top: -50px;
+                /* Rise back up and hide */
+                opacity: 0;
+                visibility: visible;
+            }
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            animation: toastAnimation 3s forwards;
+            /* Apply animation only when 'show' class is added */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .header {
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Makes it sticky */
+            top: 0;
+            left:0;
+            width: 100%;
+            padding: 15px 40px;
+            background-color: rgb(179, 179, 179);;
+            transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+    </style>
+</head>
+
+
+<body>
+    {% include 'Nav.html' %}
+    </div>
+    <p><b>Please ensure your face covers the majority of the screen</b></p>
+    <div id="toast" class="toast"></div>
+    <video id="camera-preview" autoplay></video>
+    <img id="captured-image" alt="Captured Frame">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <script>
+        const toast = document.getElementById("toast");
+        const video = document.getElementById('camera-preview');
+        const capturedImage = document.getElementById('captured-image');
+
+        let isCaptured = false;
+
+        // Load BlazeFace model
+        let model;
+        async function loadModel() {
+            camera = startCamera();
+            model = await blazeface.load();
+            console.log("BlazeFace model loaded.");
+            startDetection();
+        }
+
+        function startCamera() {
+            // Start video stream
+            navigator.mediaDevices.getUserMedia({ video: { aspectRatio: 23 / 28 } })
+                .then((stream) => {
+                    video.srcObject = stream;
+                    video.oncanplay = () => {
+                        video.play();
+                        requestAnimationFrame(processFrame);
+                    };
+                })
+                .catch((err) => {
+                    console.error('Error accessing the camera: ', err);
+                });
+        }
+
+        // Process video frames
+        async function processFrame() {
+            if (!model) {
+                requestAnimationFrame(processFrame);
+                return;
+            }
+            if (isCaptured); // Stop processing if a face is captured
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Run face detection using BlazeFace
+            const predictions = await model.estimateFaces(canvas, false);
+
+            if (predictions.length > 0) {
+                isCaptured = true;
+                video.style.display = 'none';
+                capturedImage.src = canvas.toDataURL('image/png');
+                capturedImage.style.display = 'block';
+                sendImageToBackend(canvas.toDataURL('image/png'));
+            }
+
+            if (!isCaptured) {
+                requestAnimationFrame(processFrame);
+            }
+        }
+
+        // Send image to Flask backend
+        function sendImageToBackend(imageData) {
+            const formData = new FormData();
+            formData.append('file', dataURLtoFile(imageData, 'capture.png'));
+
+            fetch('http://127.0.0.1:5000/FaceRecognition', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    const person = result.result[0]["Predicted person"]
+                    const distance = result.result[0]["Distance"]
+                    console.log(person, distance)
+                    if (person !== "Person not recognised") {
+                        toast.style.backgroundColor = '#4CAF50'
+                        showToast(`Predicted Person: ${person}, Distance: ${distance}`);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 5000);
+                    } else {
+                        toast.style.backgroundColor = '#f44336'
+                        showToast("Not recognised, please try again.");
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error sending image to backend: ', error);
+                    showToast("Error sending image to backend.");
+                });
+        }
+
+        // Convert data URL to file
+        function dataURLtoFile(dataurl, filename) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) u8arr[n] = bstr.charCodeAt(n);
+            return new File([u8arr], filename, { type: mime });
+        }
+
+        // Start processing frames after model is loaded
+        function startDetection() {
+            video.addEventListener('play', () => {
+                requestAnimationFrame(processFrame);
+            });
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show"); // Start the animation by adding the 'show' class
+            setTimeout(() => {
+                toast.classList.remove("show"); // Remove the class after the animation finishes
+            }, 3000); // Match the animation duration
+        }
+
+
+        // Load the model
+        loadModel();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Classifier Chatbot</title>
+</head>
+<style>
+/* General Styles */
+html, body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevents scrolling */
+}
+
+/* Title Bar (Below Navbar) */
+.titlebar {
+    width: 100%;
+    height: 50px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* Title Text */
+.titlebar-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Chat Container - Full screen below navbar */
+#chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 60px); /* Full height minus navbar */
+    overflow: hidden; /* Prevents unnecessary scrolling */
+}
+
+/* Chat Box */
+#chat-box {
+    flex-grow: 1; /* Takes up all remaining space */
+    overflow-y: auto; /* Allows scrolling inside only the chat box */
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat Messages */
+.message {
+    max-width: 60%;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px;
+    word-wrap: break-word;
+    font-size: 16px;
+}
+
+/* User message aligned right */
+.user-message {
+    background-color: #007bff;
+    color: white;
+    align-self: flex-end;
+    text-align: right;
+}
+
+/* Bot message aligned left */
+.bot-message {
+    background-color: #444;
+    color: #ffffff;
+    align-self: flex-start;
+    text-align: left;
+}
+
+/* Chat Form - Stays at Bottom */
+#chat-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    background-color: #1e1e1e;
+    border-top: 1px solid #333;
+    box-sizing: border-box;
+    flex-shrink: 0; /* Prevents shrinking */
+}
+
+/* Input field takes most of the space */
+#user-input {
+    flex: 1;  /* Make input field take available space */
+    padding: 15px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    outline: none;
+    background-color: #333;
+    color: #fff;
+    margin-right: 10px;
+}
+
+/* Send button with arrow icon */
+button {
+    background-color: #007bff;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+</style>
+<body>
+    {% include 'Nav.html' %}
+    <!-- Navigation Bar -->
+    <nav class="titlebar">
+        <div class="titlebar-title">Science Classifier Chatbot</div>
+    </nav>
+
+    <!-- Chat Container -->
+    <div id="chat-container">
+        <div id="chat-box"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Ask a question..." required>
+            <button type="submit">➤</button>
+        </form>
+    </div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("chat-form");
+        const userInput = document.getElementById("user-input");
+        const chatBox = document.getElementById("chat-box");
+
+        // Function to remove loading message safely
+        function removeLoadingIndicator() {
+            let loadingMessage = document.getElementById("loading-message");
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
+
+            // Display user's message on the right
+            addMessage(userMessage, 'user-message');
+
+            // Clear input field
+            userInput.value = "";
+
+            // Show "..." loading indicator while waiting for response
+            const loadingMessage = addMessage("...", 'bot-message');
+
+            // Send user input to Flask backend
+            try {
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ query: userMessage })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Server error, please try again.");
+                }
+
+                const data = await response.json();
+
+                // ✅ Ensure we only remove the loading indicator if it exists
+                removeLoadingIndicator();
+
+                // Display bot's response on the left
+                addMessage(`Topic: ${data.topic}<br><br>Summary: ${data.response}`, 'bot-message');
+            } catch (error) {
+                addMessage("Error: Unable to fetch response.", 'bot-message');
+            }
+        });
+
+        // Function to add messages to chat box with proper formatting
+        function addMessage(text, className) {
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", className);
+            
+            // Convert **bold** text to <strong>bold</strong> for proper HTML rendering
+            text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+            // Convert newlines to <br> for proper display
+            messageDiv.innerHTML = text.replace(/\n/g, "<br>");
+
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+
+</script>
+</html>
