@@ -16,6 +16,8 @@
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.10"
+    "PYTHON_VERSION": "3.10",
+    "PIP_NO_BINARY": ":all:",
+    "PIP_PREFER_BINARY": "0"
   }
 }
